@@ -1,0 +1,71 @@
+defaultTasks 'assemble'
+
+group = 'com.iqmsoft.payara.arquillian'
+version = '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+def defaultEncoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.encoding = defaultEncoding
+
+compileJava {
+  options.compilerArgs += ['-Xlint:all']
+}
+
+javadoc {
+  failOnError = false
+  options.charSet(defaultEncoding)
+}
+
+test {
+  ignoreFailures = true
+  testLogging {
+    events 'started', 'skipped', 'passed', 'failed'
+  }
+}
+
+task copyDependencies(type: Copy) {
+  from configurations.testRuntime {
+    exclude {
+      it.file.name.startsWith('study-')
+    }
+  }
+  into file("$rootDir/libext")
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+
+  compile 'org.slf4j:slf4j-api:1.7.25'
+  compile 'com.google.guava:guava:22.0'
+  compile 'com.google.inject:guice:4.1.0'
+  compile 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.2.2'
+
+ 
+  compile 'javax:javaee-api:7.0'
+  compile 'org.projectlombok:lombok:1.16.16'
+
+
+  runtime 'ch.qos.logback:logback-classic:1.2.3'
+
+
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.assertj:assertj-core:3.8.0'
+  testCompile 'org.mockito:mockito-core:2.8.9'
+  testCompile 'org.jboss.arquillian.junit:arquillian-junit-container:1.1.13.Final'
+  testCompile 'org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1:1.0.0.Final'
+
+
+  testCompile 'javax:javaee-api:7.0'
+
+
+  testRuntime 'fish.payara.api:payara-api:4.1.2.172'
+  testRuntime 'fish.payara.extras:payara-embedded-all:4.1.2.172'
+}
